@@ -36,3 +36,22 @@ func (apiCfg *apiConfig) CreateFeed(w http.ResponseWriter, r *http.Request, user
 	}
 	respondWithJSON(w, 201, feed)
 }
+
+func (apiCfg *apiConfig) GetFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+	type GetFeedRequest struct {
+		Id uuid.UUID `json:"id"`
+	}
+	params := GetFeedRequest{}
+	// create type > decode to type > get uuid > query based on uuid > return feed as the payload of respond with json
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprintf("error parsing json: %v", err))
+		return
+	}
+	feed, err := apiCfg.DB.GetFeed(r.Context(), params.Id)
+	if err != nil {
+		respondWithError(w, 400, err.Error())
+	}
+	respondWithJSON(w, 200, feed)
+}
