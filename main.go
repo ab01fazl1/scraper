@@ -50,7 +50,8 @@ func main(){
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerErr)
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
-	v1Router.Get("/users", apiCfg.handlerGetUserByApiKey)
+	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUserByApiKey))
+	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.CreateFeed))
 	
 	server := &http.Server{
 		Addr: ":" + portaddr,

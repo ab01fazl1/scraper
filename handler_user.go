@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/ab01fazl1/scraper/internal/database"
-	"github.com/ab01fazl1/scraper/internal/database/auth"
 	"github.com/google/uuid"
 )
 
@@ -46,16 +45,6 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 }
 
 
-func (apiCfg *apiConfig) handlerGetUserByApiKey(w http.ResponseWriter, r *http.Request) {
-	api_key, err := auth.GetApiKey(r.Header)
-	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't get apikey: %v", err))
-		return
-	}
-	user, err := apiCfg.DB.GetUserByApiKey(r.Context(), api_key)
-	if err != nil {
-		respondWithError(w, 403, fmt.Sprintf("no user found: %v", err))
-		return
-	}
+func (apiCfg *apiConfig) handlerGetUserByApiKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, 200, user)
 }
